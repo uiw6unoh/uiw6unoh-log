@@ -51,7 +51,7 @@ const StyledWrapper = styled.div`
     }
 
     .icon {
-      font-size: 1.25rem;
+      font-size: 5rem;
     }
     .name {
       font-size: 0.875rem;
