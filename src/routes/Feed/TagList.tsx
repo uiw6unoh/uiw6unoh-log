@@ -1,18 +1,14 @@
 import styled from "@emotion/styled"
 import { useRouter } from "next/router"
 import React from "react"
-import { Emoji } from "src/components/Emoji"
 import { useTagsQuery } from "src/hooks/useTagsQuery"
 
-type Props = {}
-
-const TagList: React.FC<Props> = () => {
+const TagList: React.FC = () => {
   const router = useRouter()
   const currentTag = router.query.tag || undefined
   const data = useTagsQuery()
 
-  const handleClickTag = (value: any) => {
-    // delete
+  const handleClickTag = (value: string) => {
     if (currentTag === value) {
       router.push({
         query: {
@@ -20,9 +16,7 @@ const TagList: React.FC<Props> = () => {
           tag: undefined,
         },
       })
-    }
-    // add
-    else {
+    } else {
       router.push({
         query: {
           ...router.query,
@@ -34,9 +28,7 @@ const TagList: React.FC<Props> = () => {
 
   return (
     <StyledWrapper>
-      <div className="top">
-        <Emoji>🏷️</Emoji> Tags
-      </div>
+      <div className="heading">🏷️ Tags</div>
       <div className="list">
         {Object.keys(data).map((key) => (
           <a
@@ -54,58 +46,31 @@ const TagList: React.FC<Props> = () => {
 
 export default TagList
 
+// 동일 간격을 주기 위해 margin-bottom 추가
 const StyledWrapper = styled.div`
-  .top {
-    display: none;
-    padding: 0.25rem;
-    margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem; 
 
-    @media (min-width: 1024px) {
-      display: block;
-    }
+  .heading {
+    margin-bottom: 0.5rem;
   }
 
   .list {
     display: flex;
-    margin-bottom: 1.5rem;
+    flex-direction: column;
     gap: 0.25rem;
-    overflow: scroll;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    ::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-
-    @media (min-width: 1024px) {
-      display: block;
-    }
 
     a {
-      display: block;
-      padding: 0.25rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      margin-top: 0.25rem;
-      margin-bottom: 0.25rem;
-      border-radius: 0.75rem;
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-      color: ${({ theme }) => theme.colors.gray10};
-      flex-shrink: 0;
       cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 0.5rem;
 
-      :hover {
+      &:hover {
         background-color: ${({ theme }) => theme.colors.gray4};
       }
-      &[data-active="true"] {
-        color: ${({ theme }) => theme.colors.gray12};
-        background-color: ${({ theme }) => theme.colors.gray4};
 
-        :hover {
-          background-color: ${({ theme }) => theme.colors.gray4};
-        }
+      &[data-active="true"] {
+        font-weight: 600;
+        background-color: ${({ theme }) => theme.colors.gray4};
       }
     }
   }
