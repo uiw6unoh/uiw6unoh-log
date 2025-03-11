@@ -1,25 +1,25 @@
-import { CONFIG } from "site.config"
-import { Emoji } from "src/components/Emoji"
 import Image from "next/image"
-import React from "react"
 import styled from "@emotion/styled"
+import { CONFIG } from "site.config"
 
-type Props = {}
-
-const ProfileCard: React.FC<Props> = () => {
+const ProfileCard: React.FC = () => {
   return (
     <StyledWrapper>
-      <div className="title">
-        <Emoji>💻</Emoji> Profile
-      </div>
-      <div className="content">
-        <div className="top">
-          <Image src={CONFIG.profile.image} fill alt="" />
+      <div className="profileRow">
+        <div className="avatarBox">
+          {/* 이미지가 원형이 되도록 border-radius 처리 */}
+          <Image
+            src={CONFIG.profile.image}
+            alt="profile"
+            fill
+            priority
+            style={{ objectFit: "cover" }}
+          />
         </div>
-        <div className="mid">
-          <div className=" name">{CONFIG.profile.name}</div>
+        <div className="infoBox">
+          <div className="name">{CONFIG.profile.name}</div>
           <div className="role">{CONFIG.profile.role}</div>
-          <div className="text-sm mb-2">{CONFIG.profile.bio}</div>
+          <div className="bio">{CONFIG.profile.bio}</div>
         </div>
       </div>
     </StyledWrapper>
@@ -29,53 +29,38 @@ const ProfileCard: React.FC<Props> = () => {
 export default ProfileCard
 
 const StyledWrapper = styled.div`
-  > .title {
-    padding: 0.25rem;
-    margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  .profileRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* 이미지와 텍스트 사이 간격 */
   }
-  > .content {
-    margin-bottom: 2.25rem;
-    border-radius: 1rem;
-    width: 100%;
-    background-color: ${({ theme }) =>
-      theme.scheme === "light" ? "white" : "rgb(63 63 70)"};
-    @media (min-width: 768px) {
-      padding: 1rem;
+
+  .avatarBox {
+    position: relative;
+    width: 64px;  /* 프로필 이미지 크기 */
+    height: 64px;
+    border-radius: 9999px; /* 원형 처리 */
+    overflow: hidden;      /* 둥글게 잘린 영역 밖 숨김 */
+    flex-shrink: 0;
+  }
+
+  .infoBox {
+    .name {
+      font-size: 1.125rem; /* 글자 크기 조절 */
+      font-weight: bold;
+      margin-bottom: 0.25rem;
     }
-    @media (min-width: 1024px) {
-      padding: 1rem;
+    .role {
+      font-size: 0.875rem;
+      color: ${({ theme }) => theme.colors.gray11};
+      margin-bottom: 0.25rem;
     }
-    .top {
-      position: relative;
-      width: 100%;
-      &:after {
-        content: "";
-        display: block;
-        padding-bottom: 100%;
-      }
-    }
-    .mid {
-      display: flex;
-      padding: 0.5rem;
-      flex-direction: column;
-      align-items: center;
-      .name {
-        font-size: 1.25rem;
-        line-height: 1.75rem;
-        font-style: italic;
-        font-weight: 700;
-      }
-      .role {
-        margin-bottom: 1rem;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        color: ${({ theme }) => theme.colors.gray11};
-      }
-      .bio {
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-      }
+    .bio {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      color: ${({ theme }) => theme.colors.gray12};
     }
   }
 `
