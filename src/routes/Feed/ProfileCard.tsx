@@ -7,7 +7,6 @@ const ProfileCard: React.FC = () => {
     <StyledWrapper>
       <div className="profileRow">
         <div className="avatarBox">
-          {/* 이미지가 원형이 되도록 border-radius 처리 */}
           <Image
             src={CONFIG.profile.image}
             alt="profile"
@@ -28,27 +27,28 @@ const ProfileCard: React.FC = () => {
 
 export default ProfileCard
 
+// 동일 간격을 주기 위해 margin-bottom 추가
 const StyledWrapper = styled.div`
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem; 
 
   .profileRow {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* 이미지와 텍스트 사이 간격 */
+    gap: 0.75rem;
   }
 
   .avatarBox {
     position: relative;
-    width: 64px;  /* 프로필 이미지 크기 */
+    width: 64px;
     height: 64px;
-    border-radius: 9999px; /* 원형 처리 */
-    overflow: hidden;      /* 둥글게 잘린 영역 밖 숨김 */
+    border-radius: 9999px;
+    overflow: hidden;
     flex-shrink: 0;
   }
 
   .infoBox {
     .name {
-      font-size: 1.125rem; /* 글자 크기 조절 */
+      font-size: 1.125rem;
       font-weight: bold;
       margin-bottom: 0.25rem;
     }
