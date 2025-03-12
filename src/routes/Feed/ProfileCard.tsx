@@ -27,9 +27,8 @@ const ProfileCard: React.FC = () => {
 
 export default ProfileCard
 
-// 동일 간격을 주기 위해 margin-bottom 추가
 const StyledWrapper = styled.div`
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 
   .profileRow {
     display: flex;
@@ -37,10 +36,11 @@ const StyledWrapper = styled.div`
     gap: 0.75rem;
   }
 
+  /* 프로필 사진 원래 크기로 복귀 (예: 128px) */
   .avatarBox {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 128px;
+    height: 128px;
     border-radius: 9999px;
     overflow: hidden;
     flex-shrink: 0;
