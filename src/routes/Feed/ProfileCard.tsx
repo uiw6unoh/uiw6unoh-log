@@ -5,21 +5,21 @@ import { CONFIG } from "site.config"
 const ProfileCard: React.FC = () => {
   return (
     <StyledWrapper>
-      <div className="profileRow">
-        <div className="avatarBox">
-          <Image
-            src={CONFIG.profile.image}
-            alt="profile"
-            fill
-            priority
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-        <div className="infoBox">
-          <div className="name">{CONFIG.profile.name}</div>
-          <div className="role">{CONFIG.profile.role}</div>
-          <div className="bio">{CONFIG.profile.bio}</div>
-        </div>
+      <div className="avatarBox">
+        {/* 프로필 이미지를 조금 줄이는 예시(예: 80px) */}
+        <Image
+          src={CONFIG.profile.image}
+          alt="profile"
+          fill
+          style={{ objectFit: "cover" }}
+          priority
+        />
+      </div>
+
+      <div className="profileText">
+        <div className="name">{CONFIG.profile.name}</div>
+        <div className="role">{CONFIG.profile.role}</div>
+        <div className="bio">{CONFIG.profile.bio}</div>
       </div>
     </StyledWrapper>
   )
@@ -28,28 +28,24 @@ const ProfileCard: React.FC = () => {
 export default ProfileCard
 
 const StyledWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼쪽 정렬 */
   margin-bottom: 1.5rem;
 
-  .profileRow {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  /* 프로필 사진 원래 크기로 복귀 (예: 128px) */
   .avatarBox {
     position: relative;
-    width: 128px;
-    height: 128px;
+    width: 80px;   /* 원하는 사이즈로 조절 */
+    height: 80px;
     border-radius: 9999px;
     overflow: hidden;
-    flex-shrink: 0;
+    margin-bottom: 0.75rem;
   }
 
-  .infoBox {
+  .profileText {
     .name {
-      font-size: 1.125rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-weight: 600;
       margin-bottom: 0.25rem;
     }
     .role {
@@ -58,7 +54,7 @@ const StyledWrapper = styled.div`
       margin-bottom: 0.25rem;
     }
     .bio {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       line-height: 1.25rem;
       color: ${({ theme }) => theme.colors.gray12};
     }
