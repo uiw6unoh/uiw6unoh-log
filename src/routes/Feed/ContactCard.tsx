@@ -9,19 +9,19 @@ const ContactCard: React.FC = () => {
       {CONFIG.profile.github && (
         <a href={`https://github.com/${CONFIG.profile.github}`} target="_blank" rel="noreferrer">
           <AiOutlineGithub className="icon" />
-          <div className="name">github</div>
+          <span>github</span>
         </a>
       )}
       {CONFIG.profile.email && (
         <a href={`mailto:${CONFIG.profile.email}`} target="_blank" rel="noreferrer">
           <AiOutlineMail className="icon" />
-          <div className="name">email</div>
+          <span>email</span>
         </a>
       )}
       {CONFIG.profile.linkedin && (
         <a href={`https://www.linkedin.com/in/${CONFIG.profile.linkedin}`} target="_blank" rel="noreferrer">
           <AiFillLinkedin className="icon" />
-          <div className="name">linkedin</div>
+          <span>linkedin</span>
         </a>
       )}
     </StyledWrapper>
@@ -31,7 +31,9 @@ const ContactCard: React.FC = () => {
 export default ContactCard
 
 const StyledWrapper = styled.div`
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem; /* 프로필과의 간격 */
+
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -40,20 +42,15 @@ const StyledWrapper = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    border-radius: 0.5rem;
     color: ${({ theme }) => theme.colors.gray11};
-    padding: 0.5rem;
+    font-size: 0.875rem;
 
     &:hover {
-      background-color: ${({ theme }) => theme.colors.gray5};
+      text-decoration: underline;
     }
 
-    /* 아이콘 사이즈 원래대로(예: 1.5rem) */
     .icon {
-      font-size: 1.5rem;
-    }
-    .name {
-      font-size: 0.875rem;
+      font-size: 1.25rem;
     }
   }
 `
