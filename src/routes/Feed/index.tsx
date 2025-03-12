@@ -1,136 +1,82 @@
 import { useState } from "react"
-import SearchInput from "./SearchInput"
-import { FeedHeader } from "./FeedHeader"
-import Footer from "./Footer"
 import styled from "@emotion/styled"
-import TagList from "./TagList"
-import MobileProfileCard from "./MobileProfileCard"
+
+import PinnedPosts from "./PostList/PinnedPosts"
+import PostList from "./PostList"
+import SearchInput from "./SearchInput"
+import Footer from "./Footer"
 import ProfileCard from "./ProfileCard"
 import ContactCard from "./ContactCard"
-import PostList from "./PostList"
-import PinnedPosts from "./PostList/PinnedPosts"
+//import TagList from "./TagList"  // 제거
+import CategoryBar from "./CategoryBar" // 새로 만든 컴포넌트
 
-const HEADER_HEIGHT = 73
-
-type Props = {}
-
-const Feed: React.FC<Props> = () => {
+export default function Feed() {
   const [q, setQ] = useState("")
 
   return (
     <StyledWrapper>
-      <div
-        className="lt"
-        css={{
-          height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-        }}
-      >
-        <TagList />
-      </div>
-      <div className="mid">
-        <MobileProfileCard />
+      {/* 왼쪽 사이드: Profile + Contact */}
+      <aside className="leftNav">
+        <ProfileCard />
+        <ContactCard />
+      </aside>
+
+      {/* 오른쪽 메인 영역 */}
+      <section className="main">
+        {/* 상단: Pinned, Search */}
         <PinnedPosts q={q} />
         <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
-        <div className="tags">
-          <TagList />
-        </div>
-        <FeedHeader />
+
+        {/* 카테고리 바 (가로) */}
+        <CategoryBar />
+
+        {/* 본문: 포스트 목록 */}
         <PostList q={q} />
         <div className="footer">
           <Footer />
         </div>
-      </div>
-      <div
-        className="rt"
-        css={{
-          height: `calc(100vh - ${HEADER_HEIGHT}px)`,
-        }}
-      >
-        <ProfileCard />
-        {/* <ServiceCard /> */}
-        <ContactCard />
-        <div className="footer">
-          <Footer />
-        </div>
-      </div>
+      </section>
     </StyledWrapper>
   )
 }
 
-export default Feed
-
 const StyledWrapper = styled.div`
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-
-  padding: 2rem 0;
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: 250px 1fr;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
 
   @media (max-width: 768px) {
     display: block;
-    padding: 0.5rem 0;
   }
 
-  > .lt {
-    display: none;
-    overflow: scroll;
+  .leftNav {
     position: sticky;
-    grid-column: span 2 / span 2;
-    top: ${HEADER_HEIGHT - 10}px;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    top: 63px; /* HEADER_HEIGHT - 10 (등 조정) */
+    height: calc(100vh - 63px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
     &::-webkit-scrollbar {
-      display: none;
+      width: 6px;
     }
-
-    @media (min-width: 1024px) {
-      display: block;
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+    &:hover::-webkit-scrollbar-thumb {
+      background: #99999966;
     }
   }
 
-  > .mid {
-    grid-column: span 12 / span 12;
-
-    @media (min-width: 1024px) {
-      grid-column: span 7 / span 7;
-    }
-
-    > .tags {
-      display: block;
-
-      @media (min-width: 1024px) {
-        display: none;
-      }
-    }
-
-    > .footer {
-      padding-bottom: 2rem;
-      @media (min-width: 1024px) {
-        display: none;
-      }
-    }
+  .main {
+    padding: 2rem 1rem;
   }
 
-  > .rt {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    display: none;
-    overflow: scroll;
-    position: sticky;
-    top: ${HEADER_HEIGHT - 10}px;
-
-    @media (min-width: 1024px) {
-      display: block;
-      grid-column: span 3 / span 3;
-    }
-
-    .footer {
-      padding-top: 1rem;
-    }
+  .footer {
+    margin-top: 2rem;
   }
 `
