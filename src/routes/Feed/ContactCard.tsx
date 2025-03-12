@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "@emotion/styled"
 import { CONFIG } from "site.config"
-import { AiOutlineInstagram, AiOutlineGithub, AiOutlineMail, AiFillLinkedin } from "react-icons/ai"
+import { AiOutlineGithub, AiOutlineMail, AiFillLinkedin } from "react-icons/ai"
 
 const ContactCard: React.FC = () => {
   return (
@@ -30,10 +30,8 @@ const ContactCard: React.FC = () => {
 
 export default ContactCard
 
-// 동일 간격을 주기 위해 margin-bottom 추가
 const StyledWrapper = styled.div`
-  margin-bottom: 1.5rem; 
-
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -50,8 +48,9 @@ const StyledWrapper = styled.div`
       background-color: ${({ theme }) => theme.colors.gray5};
     }
 
+    /* 아이콘 사이즈 원래대로(예: 1.5rem) */
     .icon {
-      font-size: 5rem;
+      font-size: 1.5rem;
     }
     .name {
       font-size: 0.875rem;
