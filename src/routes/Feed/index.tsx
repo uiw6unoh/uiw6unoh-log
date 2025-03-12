@@ -1,36 +1,37 @@
 import { useState } from "react"
 import styled from "@emotion/styled"
 
-import SearchInput from "./SearchInput"
-import { FeedHeader } from "./FeedHeader"
-import PostList from "./PostList"
 import PinnedPosts from "./PostList/PinnedPosts"
+import PostList from "./PostList"
+import SearchInput from "./SearchInput"
 import Footer from "./Footer"
 import ProfileCard from "./ProfileCard"
 import ContactCard from "./ContactCard"
-import TagList from "./TagList"
-
-const HEADER_HEIGHT = 73
+//import TagList from "./TagList"  // 제거
+import CategoryBar from "./CategoryBar" // 새로 만든 컴포넌트
 
 export default function Feed() {
   const [q, setQ] = useState("")
 
   return (
     <StyledWrapper>
-      {/* 왼쪽 사이드바 (Profile, Contact, TagList) */}
+      {/* 왼쪽 사이드: Profile + Contact */}
       <aside className="leftNav">
         <ProfileCard />
         <ContactCard />
-        <TagList />
       </aside>
 
-      {/* 오른쪽 메인영역 */}
+      {/* 오른쪽 메인 영역 */}
       <section className="main">
+        {/* 상단: Pinned, Search */}
         <PinnedPosts q={q} />
         <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
-        <FeedHeader />
-        <PostList q={q} />
 
+        {/* 카테고리 바 (가로) */}
+        <CategoryBar />
+
+        {/* 본문: 포스트 목록 */}
+        <PostList q={q} />
         <div className="footer">
           <Footer />
         </div>
@@ -40,48 +41,39 @@ export default function Feed() {
 }
 
 const StyledWrapper = styled.div`
-  /* 전체 레이아웃: 왼쪽 사이드바 + 오른쪽 메인영역 */
   display: grid;
-  grid-template-columns: 250px 1fr; /* 왼쪽 250px, 오른쪽 가변 */
+  grid-template-columns: 250px 1fr;
   gap: 1rem;
-  
-  /* 상단/하단 여백 제거 (원하시면 조정 가능) */
-  padding: 0;
   margin: 0;
+  padding: 0;
 
-  /* 반응형: 모바일에서는 한 열로 */
   @media (max-width: 768px) {
     display: block;
   }
 
-  /* 왼쪽 사이드바 */
   .leftNav {
     position: sticky;
-    top: ${HEADER_HEIGHT - 10}px;
-    height: calc(100vh - ${HEADER_HEIGHT}px);
+    top: 63px; /* HEADER_HEIGHT - 10 (등 조정) */
+    height: calc(100vh - 63px);
     overflow-y: auto;
-    /* 스크롤바 사용자 정의 */
-    scrollbar-width: thin;              /* 파이어폭스 전용(얇게) */
-    scrollbar-color: transparent transparent; /* 기본색 투명 */
-
-    /* 크롬/사파리 등 웹킷 브라우저 전용 */
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
     &::-webkit-scrollbar {
-      width: 6px; /* 스크롤바 너비 */
+      width: 6px;
     }
     &::-webkit-scrollbar-track {
       background: transparent;
     }
     &::-webkit-scrollbar-thumb {
-      background: transparent;  /* 기본은 투명 */
+      background: transparent;
     }
     &:hover::-webkit-scrollbar-thumb {
-      background: #99999966; /* 마우스 올리면 약간 보임 */
+      background: #99999966;
     }
   }
 
-  /* 오른쪽 메인 */
   .main {
-    padding: 2rem 1rem 2rem 1rem; /* 원하는 대로 조정 */
+    padding: 2rem 1rem;
   }
 
   .footer {
