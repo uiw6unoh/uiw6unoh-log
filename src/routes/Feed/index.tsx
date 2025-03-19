@@ -8,7 +8,7 @@ import Footer from "./Footer"
 import ProfileCard from "./ProfileCard"
 import ContactCard from "./ContactCard"
 //import TagList from "./TagList"  // 제거
-import CategoryBar from "./CategoryBar" // 새로 만든 컴포넌트
+import Categorybar from "./Categorybar" // 새로 만든 컴포넌트
 
 export default function Feed() {
   const [q, setQ] = useState("")
@@ -28,7 +28,7 @@ export default function Feed() {
         <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
 
         {/* 카테고리 바 (가로) */}
-        <CategoryBar />
+        <Categorybar />
 
         {/* 본문: 포스트 목록 */}
         <PostList q={q} />
