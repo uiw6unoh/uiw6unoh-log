@@ -1,82 +1,89 @@
-import { useState } from "react"
+import React from "react"
 import styled from "@emotion/styled"
+import { useRouter } from "next/router"
+import Categorybar from "./Categorybar" // 이미 소문자로 수정된 파일명
+import usePostsQuery from "src/hooks/usePostsQuery"
+import { filterPosts } from "src/libs/utils/notion"
 
-import PinnedPosts from "./PostList/PinnedPosts"
-import PostList from "./PostList"
-import SearchInput from "./SearchInput"
-import Footer from "./Footer"
-import ProfileCard from "./ProfileCard"
-import ContactCard from "./ContactCard"
-//import TagList from "./TagList"  // 제거
-import Categorybar from "./Categorybar" // 새로 만든 컴포넌트
+const Feed: React.FC = () => {
+  const router = useRouter()
+  const category = router.query.category as string
+  const posts = usePostsQuery() // 모든 글 데이터
+  const filteredPosts = filterPosts(posts) // public 글 필터링
 
-export default function Feed() {
-  const [q, setQ] = useState("")
+  // 추가로 category나 tag가 있으면 여기서 필터링
+  // const finalPosts = filteredPosts.filter((post) => post.category.includes(category))
 
   return (
-    <StyledWrapper>
-      {/* 왼쪽 사이드: Profile + Contact */}
-      <aside className="leftNav">
-        <ProfileCard />
-        <ContactCard />
-      </aside>
+    <Container>
+      {/* 상단 영역: 페이지 제목 + 포스트 수 */}
+      <HeadingWrapper>
+        <PageTitle>Dev</PageTitle>
+        <PostCount>{`${filteredPosts.length} posts`}</PostCount>
+      </HeadingWrapper>
 
-      {/* 오른쪽 메인 영역 */}
-      <section className="main">
-        {/* 상단: Pinned, Search */}
-        <PinnedPosts q={q} />
-        <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
+      {/* 카테고리 바 */}
+      <Categorybar />
 
-        {/* 카테고리 바 (가로) */}
-        <Categorybar />
-
-        {/* 본문: 포스트 목록 */}
-        <PostList q={q} />
-        <div className="footer">
-          <Footer />
-        </div>
-      </section>
-    </StyledWrapper>
+      {/* 게시글 목록 */}
+      <PostList>
+        {filteredPosts.map((post) => (
+          <PostItem key={post.slug}>
+            <PostTitle>{post.title}</PostTitle>
+            <Excerpt>
+              {post.summary /* 혹은 원하는 요약 필드 */}
+            </Excerpt>
+          </PostItem>
+        ))}
+      </PostList>
+    </Container>
   )
 }
 
-const StyledWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 1rem;
+export default Feed
+
+/* ===== styled components ===== */
+const Container = styled.div`
+  /* 전체를 흰 배경으로 하고, 가운데 정렬되도록 */
+  background-color: #ffffff;
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+`
+
+const HeadingWrapper = styled.div`
+  margin-bottom: 1rem;
+`
+
+const PageTitle = styled.h1`
   margin: 0;
-  padding: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.4;
+`
 
-  @media (max-width: 768px) {
-    display: block;
-  }
+const PostCount = styled.div`
+  font-size: 0.875rem;
+  color: #666;
+`
 
-  .leftNav {
-    position: sticky;
-    top: 63px; /* HEADER_HEIGHT - 10 (등 조정) */
-    height: calc(100vh - 63px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-      background: transparent;
-    }
-    &:hover::-webkit-scrollbar-thumb {
-      background: #99999966;
-    }
-  }
+const PostList = styled.div`
+  margin-top: 1rem;
+`
 
-  .main {
-    padding: 2rem 1rem;
-  }
+const PostItem = styled.div`
+  margin-bottom: 1.5rem;
+`
 
-  .footer {
-    margin-top: 2rem;
-  }
+const PostTitle = styled.h2`
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.4;
+`
+
+const Excerpt = styled.p`
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #888;
 `
