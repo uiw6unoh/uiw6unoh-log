@@ -1,22 +1,19 @@
 import React from "react"
 import styled from "@emotion/styled"
 import { useRouter } from "next/router"
-import Categorybar from "./Categorybar" // 이미 소문자로 수정된 파일명
+import Categorybar from "./Categorybar"
 import usePostsQuery from "src/hooks/usePostsQuery"
 import { filterPosts } from "src/libs/utils/notion"
 
 const Feed: React.FC = () => {
   const router = useRouter()
+  const posts = usePostsQuery()
+  const filteredPosts = filterPosts(posts) // 공개글 필터링
   const category = router.query.category as string
-  const posts = usePostsQuery() // 모든 글 데이터
-  const filteredPosts = filterPosts(posts) // public 글 필터링
-
-  // 추가로 category나 tag가 있으면 여기서 필터링
-  // const finalPosts = filteredPosts.filter((post) => post.category.includes(category))
 
   return (
     <Container>
-      {/* 상단 영역: 페이지 제목 + 포스트 수 */}
+      {/* 상단 섹션: 페이지 타이틀 및 포스트 수 */}
       <HeadingWrapper>
         <PageTitle>Dev</PageTitle>
         <PostCount>{`${filteredPosts.length} posts`}</PostCount>
@@ -31,7 +28,8 @@ const Feed: React.FC = () => {
           <PostItem key={post.slug}>
             <PostTitle>{post.title}</PostTitle>
             <Excerpt>
-              {post.summary /* 혹은 원하는 요약 필드 */}
+              {/* 예: post.summary 혹은 원하는 요약 필드 */}
+              {post.summary}
             </Excerpt>
           </PostItem>
         ))}
@@ -44,15 +42,23 @@ export default Feed
 
 /* ===== styled components ===== */
 const Container = styled.div`
-  /* 전체를 흰 배경으로 하고, 가운데 정렬되도록 */
-  background-color: #ffffff;
+  background-color: #ffffff; /* 흰 배경 */
   max-width: 768px;
   margin: 0 auto;
   padding: 2rem 1rem;
+
+  /* 모바일 대응 (480px 이하) */
+  @media (max-width: 480px) {
+    padding: 1.5rem 1rem;
+  }
 `
 
 const HeadingWrapper = styled.div`
   margin-bottom: 1rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 0.75rem;
+  }
 `
 
 const PageTitle = styled.h1`
@@ -60,19 +66,35 @@ const PageTitle = styled.h1`
   font-size: 2rem;
   font-weight: 600;
   line-height: 1.4;
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
 `
 
 const PostCount = styled.div`
   font-size: 0.875rem;
   color: #666;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
 `
 
 const PostList = styled.div`
   margin-top: 1rem;
+
+  @media (max-width: 480px) {
+    margin-top: 0.75rem;
+  }
 `
 
 const PostItem = styled.div`
   margin-bottom: 1.5rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
 `
 
 const PostTitle = styled.h2`
@@ -80,10 +102,19 @@ const PostTitle = styled.h2`
   font-size: 1.25rem;
   font-weight: 500;
   line-height: 1.4;
+
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+  }
 `
 
 const Excerpt = styled.p`
   margin-top: 0.5rem;
   font-size: 0.9rem;
   color: #888;
+
+  @media (max-width: 480px) {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+  }
 `
