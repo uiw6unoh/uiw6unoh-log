@@ -234,6 +234,7 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
   .notion-hr {
     border-top: 1px solid rgba(55, 53, 47, 0.16);
   }
+
   .notion-table-of-contents {
     position: fixed;
     right: -75%;
@@ -267,6 +268,10 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
     span:hover {
       background-position: -100% 0;
     }
+  }
+
+  .notion-simple-table td {
+    border: 1px solid rgb(209 213 219);
   }
 
   @media screen and (max-width: 1800px) {
