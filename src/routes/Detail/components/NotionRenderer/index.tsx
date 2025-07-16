@@ -231,6 +231,10 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
     display: none;
   }
 
+  .notion-callout {
+    border: 1px solid rgb(209 213 219);
+  }
+
   .notion-hr {
     border-top: 1px solid rgba(55, 53, 47, 0.16);
   }
