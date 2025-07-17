@@ -8,7 +8,7 @@ interface StarOrDot {
   visible: boolean
   size: number
   life: number
-  velocity?: { x: number; y: number } // 속도 미리 계산
+  velocity?: { x: number; y: number } // 속도 계산
 }
 
 function throttle<F extends (...args: any[]) => any>(
@@ -156,7 +156,7 @@ const Sparkle = (): JSX.Element => {
 }
 
 // 초기 별 생성 및 상태 설정
-const Star = React.memo(({ left, top, color, visible, size }: StarOrDot) => (
+const Star = React.memo<StarOrDot>(({ left, top, color, visible, size }) => (
   <div
     style={{
       position: "absolute",
@@ -174,8 +174,10 @@ const Star = React.memo(({ left, top, color, visible, size }: StarOrDot) => (
   />
 ))
 
+Star.displayName = "Star"
+
 // 작은 점 생성 및 상태 설정
-const TinyDot = React.memo(({ left, top, color, visible }: StarOrDot) => (
+const TinyDot = React.memo<StarOrDot>(({ left, top, color, visible }) => (
   <div
     style={{
       position: "absolute",
@@ -189,6 +191,8 @@ const TinyDot = React.memo(({ left, top, color, visible }: StarOrDot) => (
     }}
   />
 ))
+
+TinyDot.displayName = "TinyDot"
 
 const updateStarsAndDots = (
   stars: StarOrDot[],
