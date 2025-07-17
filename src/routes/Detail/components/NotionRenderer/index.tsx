@@ -13,6 +13,7 @@ import "katex/dist/katex.min.css"
 import { FC, useEffect } from "react"
 import styled from "@emotion/styled"
 import { pretendard } from "src/assets"
+import { useTocScroll } from "src/hooks/useTocScroll"
 
 const _NotionRenderer = dynamic(
   () => import("react-notion-x").then((m) => m.NotionRenderer),
@@ -70,6 +71,8 @@ type StyledWrapperProps = {
 
 const NotionRenderer: FC<Props> = ({ recordMap }) => {
   const [scheme] = useScheme()
+
+  useTocScroll(50) // 오프셋
 
   useEffect(() => {
     const rootElement = document.documentElement
@@ -180,6 +183,12 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
     border-color: rgb(96 165 250);
   }
 
+  .notion-callout,
+  .notion-bookmark,
+  .notion-simple-table td {
+    border: 1px solid rgb(209 213 219);
+  }
+
   .notion-viewport {
     z-index: -10;
   }
@@ -231,10 +240,6 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
     display: none;
   }
 
-  .notion-callout {
-    border: 1px solid rgb(209 213 219);
-  }
-
   .notion-hr {
     border-top: 1px solid rgba(55, 53, 47, 0.16);
   }
@@ -272,10 +277,6 @@ const StyledWrapper = styled.div<StyledWrapperProps>`
     span:hover {
       background-position: -100% 0;
     }
-  }
-
-  .notion-simple-table td {
-    border: 1px solid rgb(209 213 219);
   }
 
   @media screen and (max-width: 1800px) {
