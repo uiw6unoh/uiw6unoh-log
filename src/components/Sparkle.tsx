@@ -211,7 +211,6 @@ const updateStarsAndDots = (
     const isVisible = star.size > 2
 
     if (newSize > 2 || newLife < 100) {
-      // 원래 수명 유지
       updatedStars.push({
         ...star,
         top: star.top + (star.velocity?.y || 1) * timeFactor,
