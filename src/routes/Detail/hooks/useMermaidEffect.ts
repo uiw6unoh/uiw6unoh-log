@@ -2,37 +2,56 @@ import mermaid from "mermaid"
 import { useEffect } from "react"
 
 const waitForMermaid = (interval = 100, timeout = 5000) => {
-  return new Promise<HTMLCollectionOf<Element>>((resolve, reject) => {
-    const startTime = Date.now()
-    const elements: HTMLCollectionOf<Element> =
-      document.getElementsByClassName("language-mermaid")
+  let timerId: ReturnType<typeof setTimeout>
+  let cancelled = false
 
-    const checkMerMaidCode = () => {
-      if (mermaid.render !== undefined && elements.length > 0) {
+  const promise = new Promise<HTMLCollectionOf<Element>>((resolve, reject) => {
+    const startTime = Date.now()
+    const elements = document.getElementsByClassName("language-mermaid")
+
+    const check = () => {
+      if (cancelled) return
+      if (elements.length > 0) {
         resolve(elements)
       } else if (Date.now() - startTime >= timeout) {
-        reject(new Error(`mermaid is not defined within the timeout period.`))
+        reject(new Error(`mermaid elements not found within the timeout period.`))
       } else {
-        setTimeout(checkMerMaidCode, interval)
+        timerId = setTimeout(check, interval)
       }
     }
-    checkMerMaidCode()
+    check()
   })
+
+  const cancel = () => {
+    cancelled = true
+    clearTimeout(timerId)
+  }
+
+  return { promise, cancel }
 }
+
 const useMermaidEffect = () => {
   useEffect(() => {
-    mermaid.initialize({
-      startOnLoad: true,
-    })
-    if (!document) return
-    waitForMermaid()
+    mermaid.initialize({ startOnLoad: true })
+
+    let mounted = true
+    const { promise, cancel } = waitForMermaid()
+
+    promise
       .then((elements) => {
+        if (!mounted) return
+        const parser = new DOMParser()
         for (let i = 0; i < elements.length; i++) {
           mermaid.render(
             "mermaid" + i,
             elements[i].textContent || "",
             (svgCode: string) => {
-              elements[i].innerHTML = svgCode
+              if (!mounted) return
+              const doc = parser.parseFromString(svgCode, "image/svg+xml")
+              const svg = doc.documentElement
+              if (svg instanceof SVGElement) {
+                elements[i].replaceChildren(svg)
+              }
             }
           )
         }
@@ -40,9 +59,12 @@ const useMermaidEffect = () => {
       .catch((error) => {
         console.warn(error)
       })
-  }, [])
 
-  return
+    return () => {
+      mounted = false
+      cancel()
+    }
+  }, [])
 }
 
 export default useMermaidEffect
