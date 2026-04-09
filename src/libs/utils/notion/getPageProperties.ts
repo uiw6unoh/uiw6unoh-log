@@ -12,72 +12,59 @@ async function getPageProperties(
   const api = new NotionAPI()
   const blockData = unwrapRecordValue(block?.[id])
   const rawProperties = Object.entries(blockData?.properties || [])
-  const excludeProperties = ["date", "select", "multi_select", "person", "file"]
-  const properties: any = {}
-  for (let i = 0; i < rawProperties.length; i++) {
-    const [key, val]: any = rawProperties[i]
-    properties.id = id
-    if (schema[key]?.type && !excludeProperties.includes(schema[key].type)) {
-      properties[schema[key].name] = getTextContent(val)
-    } else {
-      switch (schema[key]?.type) {
-        case "file": {
-          try {
-            const url: string = val[0][1][0][1]
-            const newurl = customMapImageUrl(url, blockData)
-            properties[schema[key].name] = newurl
-          } catch (error) {
-            properties[schema[key].name] = undefined
-          }
-          break
-        }
-        case "date": {
-          const dateProperty: any = getDateValue(val)
-          delete dateProperty.type
-          properties[schema[key].name] = dateProperty
-          break
-        }
-        case "select": {
-          const selects = getTextContent(val)
-          if (selects[0]?.length) {
-            properties[schema[key].name] = selects.split(",")
-          }
-          break
-        }
-        case "multi_select": {
-          const selects = getTextContent(val)
-          if (selects[0]?.length) {
-            properties[schema[key].name] = selects.split(",")
-          }
-          break
-        }
-        case "person": {
-          const rawUsers = val.flat()
+  const properties: any = { id }
+  for (const [key, val] of rawProperties as [string, any][]) {
+    const schemaEntry = schema[key]
+    if (!schemaEntry) continue
 
-          const users = []
-          for (let i = 0; i < rawUsers.length; i++) {
-            if (rawUsers[i][0][1]) {
-              const userId = rawUsers[i][0]
-              const res: any = await api.getUsers(userId)
-              const resValue = unwrapRecordValue(
-                res?.recordMapWithRoles?.notion_user?.[userId[1]]
-              )
-              const user = {
-                id: resValue?.id,
-                name:
-                  resValue?.name ||
-                  `${resValue?.family_name}${resValue?.given_name}` ||
-                  undefined,
-                profile_photo: resValue?.profile_photo || null,
-              }
-              users.push(user)
-            }
-          }
-          properties[schema[key].name] = users
-          break
+    switch (schemaEntry.type) {
+      case "file": {
+        const url: string | undefined = val?.[0]?.[1]?.[0]?.[1]
+        properties[schemaEntry.name] = url
+          ? customMapImageUrl(url, blockData)
+          : undefined
+        break
+      }
+      case "date": {
+        const dateProperty: any = getDateValue(val)
+        delete dateProperty.type
+        properties[schemaEntry.name] = dateProperty
+        break
+      }
+      case "select":
+      case "multi_select": {
+        const selects = getTextContent(val)
+        if (selects[0]?.length) {
+          properties[schemaEntry.name] = selects.split(",")
         }
-        default:
-          break
+        break
+      }
+      case "person": {
+        const rawUsers = val.flat()
+        const users = []
+        for (const rawUser of rawUsers) {
+          if (rawUser[0][1]) {
+            const userId = rawUser[0]
+            const res: any = await api.getUsers(userId)
+            const resValue = unwrapRecordValue(
+              res?.recordMapWithRoles?.notion_user?.[userId[1]]
+            )
+            users.push({
+              id: resValue?.id,
+              name:
+                resValue?.name ||
+                `${resValue?.family_name}${resValue?.given_name}` ||
+                undefined,
+              profile_photo: resValue?.profile_photo || null,
+            })
+          }
+        }
+        properties[schemaEntry.name] = users
+        break
+      }
+      default: {
+        properties[schemaEntry.name] = getTextContent(val)
+        break
       }
     }
   }

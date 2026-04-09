@@ -37,23 +37,34 @@ const useMermaidEffect = () => {
     let mounted = true
     const { promise, cancel } = waitForMermaid()
 
+    const container = document.createElement("div")
+    container.style.visibility = "hidden"
+    container.style.position = "absolute"
+    document.body.appendChild(container)
+
     promise
       .then((elements) => {
         if (!mounted) return
         const parser = new DOMParser()
+
         for (let i = 0; i < elements.length; i++) {
-          mermaid.render(
-            "mermaid" + i,
-            elements[i].textContent || "",
-            (svgCode: string) => {
-              if (!mounted) return
-              const doc = parser.parseFromString(svgCode, "image/svg+xml")
-              const svg = doc.documentElement
-              if (svg instanceof SVGElement) {
-                elements[i].replaceChildren(svg)
-              }
-            }
-          )
+          try {
+            mermaid.render(
+              "mermaid" + i,
+              elements[i].textContent || "",
+              (svgCode: string) => {
+                if (!mounted) return
+                const doc = parser.parseFromString(svgCode, "image/svg+xml")
+                const svg = doc.documentElement
+                if (svg instanceof SVGElement) {
+                  elements[i].replaceChildren(svg)
+                }
+              },
+              container
+            )
+          } catch (e) {
+            console.warn("mermaid render error", e)
+          }
         }
       })
       .catch((error) => {
@@ -63,6 +74,7 @@ const useMermaidEffect = () => {
     return () => {
       mounted = false
       cancel()
+      container.remove()
     }
   }, [])
 }

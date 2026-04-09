@@ -18,6 +18,35 @@ export const getPosts = async () => {
 
   const response = await api.getPage(id)
   id = idToUuid(id)
+
+  if (Object.keys(response.collection_query).length === 0) {
+    const rawMetadataForQuery = unwrapRecordValue(response.block[id])
+    if (
+      rawMetadataForQuery?.type === "collection_view_page" ||
+      rawMetadataForQuery?.type === "collection_view"
+    ) {
+      const collectionId = Object.keys(response.collection)[0]
+      const viewIds: string[] = rawMetadataForQuery?.view_ids || []
+      for (const viewId of viewIds) {
+        try {
+          const collectionView = unwrapRecordValue(response.collection_view[viewId])
+          const collectionData = await api.getCollectionData(
+            collectionId,
+            viewId,
+            collectionView
+          )
+          if (!response.collection_query[collectionId]) {
+            response.collection_query[collectionId] = {}
+          }
+          response.collection_query[collectionId][viewId] =
+            (collectionData as any)?.result?.reducerResults
+        } catch (e) {
+          console.warn("Failed to fetch collection data for view", viewId, e)
+        }
+      }
+    }
+  }
+
   const collection = unwrapRecordValue(Object.values(response.collection)[0])
   const block = response.block
   const schema = collection?.schema
