@@ -99,7 +99,51 @@ if (Object.keys(response.collection_query).length === 0) {
 
 ---
 
-## 3. mapPageUrl undefined 에러
+## 3. 블록 많은 페이지 내용 일부 누락 문제
+
+### 오류 원인
+
+notion-client@6의 `getPage()` 내부는 누락된 블록을 찾기 위해 `getPageContentBlockIds()`를 호출한다. 이 함수는 `block[id].value.content`를 재귀 순회하며 자식 블록 ID를 수집한다.
+
+그러나 이중 래핑 상태에서는 `block[id].value`가 `{ value: actualData, role: ... }` 이므로 `content` 필드가 존재하지 않아 자식 블록 탐색이 즉시 종료된다.
+
+결과적으로 `loadPageChunk`로 받은 첫 청크(기본 100개)만 남고, 나머지 블록이 누락된 줄 모르고 추가 fetch를 하지 않는다.
+
+```
+// notion-utils getPageContentBlockIds 내부 (index.js)
+let a = e.block[r]?.value            // ← 이중 래핑 상태: { value: actualData, role }
+let { content: m, ... } = a          // ← content === undefined
+// content가 없으므로 자식 블록 순회 안 됨 → 누락 블록 0개로 오판
+```
+
+### 오류 해소
+
+`getRecordMap.ts`에서 `normalizeRecordMap()` 호출 후, `getPageContentBlockIds()`로 전체 블록 ID를 수집하고 누락된 블록을 직접 반복 fetch한다.
+
+```ts
+// src/apis/notion-client/getRecordMap.ts
+
+normalizeRecordMap(recordMap)
+
+for (;;) {
+  const allIds = getPageContentBlockIds(recordMap)
+  const missingIds = allIds.filter((id) => !recordMap.block[id])
+  if (!missingIds.length) break
+
+  const fetched = (await api.getBlocks(missingIds)).recordMap.block
+  for (const id in fetched) {
+    const record = fetched[id] as any
+    if (record?.value?.value !== undefined) {
+      fetched[id] = { role: record.value.role, value: record.value.value }
+    }
+  }
+  Object.assign(recordMap.block, fetched)
+}
+```
+
+---
+
+## 4. mapPageUrl undefined 에러
 
 ### 오류 원인
 
