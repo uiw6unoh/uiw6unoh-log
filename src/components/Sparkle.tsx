@@ -68,13 +68,12 @@ const Sparkle = (): JSX.Element => {
     let isActive = true
 
     const resize = () => {
-      canvas.width = document.documentElement.scrollWidth
-      canvas.height = document.documentElement.scrollHeight
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
     }
     resize()
 
-    const resizeObserver = new ResizeObserver(resize)
-    resizeObserver.observe(document.documentElement)
+    window.addEventListener("resize", resize, { passive: true })
 
     const onVisibilityChange = () => {
       isActive = !document.hidden
@@ -90,8 +89,8 @@ const Sparkle = (): JSX.Element => {
 
       lastSpawn = now
       particles.push({
-        x: e.pageX,
-        y: e.pageY,
+        x: e.clientX,
+        y: e.clientY,
         vx: (Math.random() - 0.5) * 2,
         vy: 1 + Math.random() * 3,
         size: 5,
@@ -138,7 +137,7 @@ const Sparkle = (): JSX.Element => {
       cancelAnimationFrame(animationId)
       document.removeEventListener("mousemove", onMouseMove)
       document.removeEventListener("visibilitychange", onVisibilityChange)
-      resizeObserver.disconnect()
+      window.removeEventListener("resize", resize)
     }
   }, [])
 
@@ -146,7 +145,7 @@ const Sparkle = (): JSX.Element => {
     <canvas
       ref={canvasRef}
       style={{
-        position: "absolute",
+        position: "fixed",
         top: 0,
         left: 0,
         pointerEvents: "none",

@@ -5,7 +5,6 @@ import Header from "./Header"
 import styled from "@emotion/styled"
 import Scripts from "src/layouts/RootLayout/Scripts"
 import useGtagEffect from "./useGtagEffect"
-import useThrottle from "src/hooks/useThrottle"
 import { useRouter } from "next/router"
 
 type Props = {
@@ -22,10 +21,6 @@ const RootLayout = ({ children }: Props) => {
 
   useGtagEffect()
 
-  const scrollThrottle = useThrottle(() => {
-    setThrottleScrollY(window.scrollY)
-  }, 100)
-
   const getCurrentPercentage = () => {
     if (window.scrollY === 0 || router.asPath === "/") return 0
 
@@ -41,6 +36,17 @@ const RootLayout = ({ children }: Props) => {
   }
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+
+    const scrollThrottle = () => {
+      if (!timer) {
+        setThrottleScrollY(window.scrollY)
+        timer = setTimeout(() => {
+          timer = null
+        }, 100)
+      }
+    }
+
     const updateBlogHeight = () => {
       const totalHeight = document.documentElement.scrollHeight
       setBlogHeight(window.scrollY === 0 ? 0 : totalHeight - window.innerHeight)
@@ -54,8 +60,9 @@ const RootLayout = ({ children }: Props) => {
     return () => {
       window.removeEventListener("scroll", scrollThrottle)
       window.removeEventListener("resize", updateBlogHeight)
+      if (timer) clearTimeout(timer)
     }
-  }, [scrollThrottle])
+  }, [])
 
   return (
     <ThemeProvider scheme={scheme}>
